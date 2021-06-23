@@ -4,7 +4,7 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { useRouter } from 'next/router';
-import { useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 
 import Resume from '../resume/Resume.component';
 import { CarHeader, CardDetail } from './ShoppingResume.styles';
@@ -32,6 +32,7 @@ export default function ShoppingResume({ car }:IShoppingResumeProps):JSX.Element
   const classes = useStyles();
 
   const [addOrder] = useMutation(ADD_ORDER);
+  const {data: { orders }} = useQuery(ORDERS)
 
   let price = 0;
   const TAX = 18;
@@ -71,15 +72,23 @@ export default function ShoppingResume({ car }:IShoppingResumeProps):JSX.Element
         </Alert>
       );
 
+      const str = 0 + orders.length + 1
+      const newStr = str.toString()
+      const pad = "P0000"
+      const id = pad.substring(0, pad.length - newStr.length) + newStr
+      
       const response = await addOrder({ 
         update: cache => {
           cache.writeQuery({
             query: ORDERS,
             data: {
-              orders: [{
-                id: 1283,
-                total,
-              }]
+              orders: [
+                ...orders,
+                {
+                  id,
+                  total,
+                }
+              ]
             }
           })
         }
