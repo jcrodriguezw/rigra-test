@@ -4,9 +4,16 @@ import {useQuery} from '@apollo/client';
 import { OrderCompletedContainer } from './OrderCompleted.styles';
 import OrderCompletedIcon from '../../assets/Complete';
 import {ORDERS} from '../../graphql/queries';
+import { useEffect } from 'react';
 
 export default function OrderCompleted():JSX.Element {
   const {data: { orders }} = useQuery(ORDERS)
+
+  if(!orders.length) return (
+    <OrderCompletedContainer>
+      <h2>No tienes ordenes</h2>
+    </OrderCompletedContainer>
+  )
 
   const lastOrder = orders.length - 1
 
